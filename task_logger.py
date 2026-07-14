@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def log_action(action_type, thread_subject, detail, action_id):
-    """Appends a record to action_log.json.
+    """Appends a record to action log using Streamlit session state or file fallback.
 
     Args:
         action_type: "sent" or "booked"
@@ -20,6 +20,18 @@ def log_action(action_type, thread_subject, detail, action_id):
         "id": action_id,
     }
 
+    # Try to use Streamlit session state first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'session_state'):
+            if 'action_log' not in st.session_state:
+                st.session_state.action_log = []
+            st.session_state.action_log.append(record)
+            return
+    except ImportError:
+        pass
+
+    # Fall back to file-based persistence (for local development)
     log = get_action_log()
     log.append(record)
 
@@ -28,10 +40,19 @@ def log_action(action_type, thread_subject, detail, action_id):
 
 
 def get_action_log():
-    """Reads action_log.json and returns the full list.
+    """Reads action log from Streamlit session state or file fallback.
 
-    Returns [] if the file does not exist or is empty.
+    Returns [] if no log exists.
     """
+    # Try Streamlit session state first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'session_state') and 'action_log' in st.session_state:
+            return st.session_state.action_log
+    except ImportError:
+        pass
+
+    # Fall back to file-based persistence (for local development)
     if not os.path.exists("action_log.json"):
         return []
 
@@ -46,6 +67,16 @@ def get_action_log():
 
 
 def clear_log():
-    """Writes an empty list to action_log.json."""
+    """Clears the action log from Streamlit session state or file fallback."""
+    # Try Streamlit session state first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'session_state'):
+            st.session_state.action_log = []
+            return
+    except ImportError:
+        pass
+
+    # Fall back to file-based persistence (for local development)
     with open("action_log.json", "w") as f:
         json.dump([], f)

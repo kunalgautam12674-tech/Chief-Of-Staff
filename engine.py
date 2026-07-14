@@ -41,14 +41,56 @@ _CREDENTIALS_PATH = _CONFIG_DIR / "credentials.json"
 def _get_authenticated_service():
     """Load or refresh credentials and return a Gmail API service object.
 
-    The Gmail MCP server saves the token file (``credentials.json``) in a
-    Google "authorized user" format that lacks ``client_id`` / ``client_secret``.
-    We therefore read those from the OAuth keys file and merge them.
+    Supports both local file-based credentials and Streamlit secrets for cloud deployment.
     """
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets'):
+            try:
+                # Check for service account credentials (recommended for production)
+                if 'GOOGLE_CREDENTIALS_JSON' in st.secrets:
+                    from google.oauth2.service_account import Credentials as ServiceAccountCredentials
+                    creds_dict = json.loads(st.secrets['GOOGLE_CREDENTIALS_JSON'])
+                    creds = ServiceAccountCredentials.from_service_account_info(
+                        creds_dict, scopes=SCOPES
+                    )
+                    return build("gmail", "v1", credentials=creds)
+                
+                # Check for pre-authorized OAuth tokens (alternative for development)
+                required_keys = ['OAUTH_ACCESS_TOKEN', 'OAUTH_REFRESH_TOKEN',
+                                'OAUTH_CLIENT_ID', 'OAUTH_CLIENT_SECRET']
+                secrets_available = all(k in st.secrets for k in required_keys)
+                if secrets_available:
+                    creds = Credentials(
+                        token=st.secrets['OAUTH_ACCESS_TOKEN'],
+                        refresh_token=st.secrets['OAUTH_REFRESH_TOKEN'],
+                        token_uri="https://oauth2.googleapis.com/token",
+                        client_id=st.secrets['OAUTH_CLIENT_ID'],
+                        client_secret=st.secrets['OAUTH_CLIENT_SECRET'],
+                        scopes=SCOPES,
+                    )
+                    if creds.expired and creds.refresh_token:
+                        creds.refresh(Request())
+                    return build("gmail", "v1", credentials=creds)
+                else:
+                    # Debug: log which keys are missing
+                    missing = [k for k in required_keys if k not in st.secrets]
+                    print(f"Missing OAuth secrets: {missing}")
+            except Exception as e:
+                print(f"Error using Streamlit secrets: {e}")
+                import traceback
+                traceback.print_exc()
+                # No secrets file exists, fall back to local files
+                pass
+    except ImportError:
+        pass
+
+    # Fall back to local file-based credentials (for local development)
     if not _OAUTH_KEYS_PATH.exists():
         raise FileNotFoundError(
             f"OAuth keys not found. Place gcp-oauth.keys.json "
-            f"in {_CONFIG_DIR}"
+            f"in {_CONFIG_DIR} or configure Streamlit secrets for cloud deployment."
         )
 
     # Read the OAuth keys to get client_id / client_secret / redirect_uris
@@ -84,7 +126,7 @@ def _get_authenticated_service():
             print("Refreshing expired Gmail token...")
             creds.refresh(Request())
         else:
-            # Run the OAuth flow (opens a browser)
+            # Run the OAuth flow (opens a browser) - only works locally
             flow = InstalledAppFlow.from_client_config(
                 {"installed": installed}, SCOPES
             )

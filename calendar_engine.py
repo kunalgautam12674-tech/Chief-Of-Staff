@@ -14,7 +14,26 @@ from pathlib import Path
 
 
 def load_env():
-    """Load .env file manually without requiring python-dotenv."""
+    """Load .env file manually without requiring python-dotenv.
+    Falls back to Streamlit secrets if available.
+    """
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets'):
+            try:
+                for key in ['GEMINI_API_KEY', 'GOOGLE_CREDENTIALS_JSON', 
+                           'OAUTH_ACCESS_TOKEN', 'OAUTH_REFRESH_TOKEN',
+                           'OAUTH_CLIENT_ID', 'OAUTH_CLIENT_SECRET']:
+                    if key in st.secrets:
+                        os.environ.setdefault(key, st.secrets[key])
+            except Exception:
+                # No secrets file exists, fall back to .env
+                pass
+    except ImportError:
+        pass
+    
+    # Fall back to .env file (for local development)
     env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
     if os.path.exists(env_path):
         with open(env_path) as f:
@@ -67,14 +86,47 @@ _CREDENTIALS_PATH = _CONFIG_DIR / "credentials.json"
 def _build_calendar_service():
     """Load or refresh credentials and return a Calendar v3 API service object.
 
-    Uses the same OAuth token file (``credentials.json``) and client keys
-    (``gcp-oauth.keys.json``) as the Gmail engine, so the user only needs to
-    authorise once for both Gmail and Calendar scopes.
+    Supports both local file-based credentials and Streamlit secrets for cloud deployment.
     """
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets'):
+            try:
+                # Check for service account credentials (recommended for production)
+                if 'GOOGLE_CREDENTIALS_JSON' in st.secrets:
+                    from google.oauth2.service_account import Credentials as ServiceAccountCredentials
+                    creds_dict = json.loads(st.secrets['GOOGLE_CREDENTIALS_JSON'])
+                    creds = ServiceAccountCredentials.from_service_account_info(
+                        creds_dict, scopes=SCOPES
+                    )
+                    return build("calendar", "v3", credentials=creds, cache_discovery=False)
+                
+                # Check for pre-authorized OAuth tokens (alternative for development)
+                if all(k in st.secrets for k in ['OAUTH_ACCESS_TOKEN', 'OAUTH_REFRESH_TOKEN',
+                                                  'OAUTH_CLIENT_ID', 'OAUTH_CLIENT_SECRET']):
+                    creds = Credentials(
+                        token=st.secrets['OAUTH_ACCESS_TOKEN'],
+                        refresh_token=st.secrets['OAUTH_REFRESH_TOKEN'],
+                        token_uri="https://oauth2.googleapis.com/token",
+                        client_id=st.secrets['OAUTH_CLIENT_ID'],
+                        client_secret=st.secrets['OAUTH_CLIENT_SECRET'],
+                        scopes=SCOPES,
+                    )
+                    if creds.expired and creds.refresh_token:
+                        creds.refresh(Request())
+                    return build("calendar", "v3", credentials=creds, cache_discovery=False)
+            except Exception:
+                # No secrets file exists, fall back to local files
+                pass
+    except ImportError:
+        pass
+
+    # Fall back to local file-based credentials (for local development)
     if not _OAUTH_KEYS_PATH.exists():
         raise FileNotFoundError(
             f"OAuth keys not found. Place gcp-oauth.keys.json "
-            f"in {_CONFIG_DIR}"
+            f"in {_CONFIG_DIR} or configure Streamlit secrets for cloud deployment."
         )
 
     # Read the OAuth keys to get client_id / client_secret / redirect_uris
@@ -109,7 +161,7 @@ def _build_calendar_service():
             print("Refreshing expired token for Calendar...")
             creds.refresh(Request())
         else:
-            # Run the OAuth flow (opens a browser)
+            # Run the OAuth flow (opens a browser) - only works locally
             flow = InstalledAppFlow.from_client_config(
                 {"installed": installed}, SCOPES
             )

@@ -5,7 +5,23 @@ from google.genai import errors
 
 
 def load_env():
-    """Load .env file manually without requiring python-dotenv."""
+    """Load .env file manually without requiring python-dotenv.
+    Falls back to Streamlit secrets if available.
+    """
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets'):
+            try:
+                if 'GEMINI_API_KEY' in st.secrets:
+                    os.environ.setdefault('GEMINI_API_KEY', st.secrets['GEMINI_API_KEY'])
+            except Exception:
+                # No secrets file exists, fall back to .env
+                pass
+    except ImportError:
+        pass
+    
+    # Fall back to .env file (for local development)
     env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
     if os.path.exists(env_path):
         with open(env_path) as f:
@@ -21,8 +37,8 @@ load_env()
 api_key = os.environ.get("GEMINI_API_KEY")
 if not api_key:
     raise ValueError(
-        "No API key found. Set GEMINI_API_KEY in .env file "
-        "or as an environment variable."
+        "No API key found. Set GEMINI_API_KEY in Streamlit secrets "
+        "(for cloud) or in .env file (for local development)."
     )
 client = genai.Client(api_key=api_key)
 MODEL = "gemini-3.1-flash-lite"  # fast, cheap, good for triage

@@ -20,13 +20,41 @@ def _is_meeting_thread(thread: dict) -> bool:
 
 
 def load_tone_profile(path="tone_profile.json") -> dict:
-    """Reads and returns the tone profile dict from a JSON file."""
+    """Reads and returns the tone profile dict from a JSON file or Streamlit secrets."""
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets'):
+            try:
+                if 'tone_profile' in st.secrets:
+                    return json.loads(st.secrets['tone_profile'])
+            except Exception:
+                # No secrets file exists, fall back to file
+                pass
+    except ImportError:
+        pass
+
+    # Fall back to file-based loading (for local development)
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
 def load_past_replies(path="past_replies.json") -> list:
-    """Reads and returns a list of past reply examples from a JSON file."""
+    """Reads and returns a list of past reply examples from a JSON file or Streamlit secrets."""
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        import streamlit as st
+        if hasattr(st, 'secrets'):
+            try:
+                if 'past_replies' in st.secrets:
+                    return json.loads(st.secrets['past_replies'])
+            except Exception:
+                # No secrets file exists, fall back to file
+                pass
+    except ImportError:
+        pass
+
+    # Fall back to file-based loading (for local development)
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
