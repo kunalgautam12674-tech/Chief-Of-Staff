@@ -2,7 +2,8 @@ import os
 import sys
 import time
 
-import google.generativeai as genai
+from google import genai
+from google.genai import errors
 from dotenv import load_dotenv
 
 from context_builder import assemble_context
@@ -16,7 +17,7 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL_NAME = "gemini-2.5-flash"
 
 if API_KEY:
-    genai.configure(api_key=API_KEY)
+    client = genai.Client(api_key=API_KEY)
 
 _MAX_RETRIES = 3
 _RETRY_BASE_DELAY = 2.0  # seconds
@@ -56,8 +57,8 @@ def _build_combined_prompt(thread: dict) -> str:
     )
 
 
-def _generate_with_retry(model: genai.GenerativeModel, prompt: str) -> str:
-    """Call model.generate_content with exponential backoff retry for rate limits."""
+def _generate_with_retry(prompt: str) -> str:
+    """Call client.models.generate_content with exponential backoff retry for rate limits."""
     start_time = time.time()
     
     for attempt in range(_MAX_RETRIES):
@@ -66,9 +67,12 @@ def _generate_with_retry(model: genai.GenerativeModel, prompt: str) -> str:
             raise RuntimeError(f"Timeout after {time.time() - start_time:.1f}s due to persistent rate limiting.")
         
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=MODEL_NAME,
+                contents=prompt,
+            )
             return response.text.strip()
-        except Exception as e:
+        except errors.ClientError as e:
             error_str = str(e)
             if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
                 if attempt < _MAX_RETRIES - 1:
@@ -106,8 +110,7 @@ def draft_reply(thread: dict) -> str:
         )
 
     prompt = _build_combined_prompt(thread)
-    model = genai.GenerativeModel(MODEL_NAME)
-    return _generate_with_retry(model, prompt)
+    return _generate_with_retry(prompt)
 
 
 def draft_reply_with_metadata(thread: dict) -> dict:
