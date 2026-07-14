@@ -1,0 +1,82 @@
+[
+    {
+        "id": "thread_001",
+        "subject": "URGENT: Production database replication lag — need immediate attention",
+        "messages": [
+            {
+                "from": "Aisha (DevOps)",
+                "date": "2026-07-11 09:15",
+                "body": "Hi team,\n\nWe're seeing a critical replication lag on the primary production database — currently at 12 minutes and growing. This is affecting the order processing pipeline. I need someone to investigate ASAP.\n\nI've already paged the on-call DBA but they're not responding. Can someone from the engineering team take a look?\n\nThanks,\nAisha"
+            },
+            {
+                "from": "Rohan (Engineering)",
+                "date": "2026-07-11 09:22",
+                "body": "Looking at it now. The replica node seems to have run out of disk space. I'm clearing logs and will report back in 10 minutes.\n\nRohan"
+            }
+        ]
+    },
+    {
+        "id": "thread_002",
+        "subject": "Q3 performance feedback — your input needed by Friday",
+        "messages": [
+            {
+                "from": "Meera (VP Engineering)",
+                "date": "2026-07-10 14:30",
+                "body": "Hi Kunal,\n\nAs part of our Q3 review cycle, I need your written feedback on the following team members by this Friday EOD:\n\n1. Ananya Sharma — Senior Frontend Engineer\n2. Vikram Joshi — Backend Engineer\n3. Priya Kapoor — QA Lead\n\nPlease include specific examples of their work this quarter, areas of strength, and any growth opportunities you've observed. Keep each review to about 3-4 bullet points.\n\nLet me know if you have any questions.\n\nBest,\nMeera"
+            },
+            {
+                "from": "Kunal",
+                "date": "2026-07-10 16:00",
+                "body": "Got it, Meera. I'll have the feedback ready by Friday. Do you want me to include the project metrics (PRs merged, bugs caught, etc.) or just qualitative observations?\n\nKunal"
+            },
+            {
+                "from": "Meera (VP Engineering)",
+                "date": "2026-07-10 16:15",
+                "body": "Qualitative is fine — I have the metrics from the dashboards. Focus on impact, collaboration, and areas for growth.\n\nThanks!\nMeera"
+            }
+        ]
+    },
+    {
+        "id": "thread_003",
+        "subject": "Weekly standup notes — July 6–10",
+        "messages": [
+            {
+                "from": "Sneha (PM)",
+                "date": "2026-07-10 17:00",
+                "body": "Hi everyone,\n\nHere are the standup notes from this week for visibility:\n\n**Engineering:**\n- Reporting module: Backend complete, UI in final review\n- Auth service: Migrated to new JWT library, no regressions\n- Bug fixes: 12 tickets closed, 3 in progress\n\n**Design:**\n- Dashboard v2 mockups shared for feedback\n- Mobile responsive layouts in progress\n\n**Product:**\n- User testing sessions scheduled for next Tue/Wed\n- Feature prioritisation for Q4 underway\n\nNo blockers reported. Have a good weekend!\n\nSneha"
+            }
+        ]
+    },
+    {
+        "id": "thread_004",
+        "subject": "Vendor contract renewal — DataSync Pro terms review",
+        "messages": [
+            {
+                "from": "Sneha (Procurement)",
+                "date": "2026-07-09 11:00",
+                "body": "Hi Rahul,\n\nOur annual contract with DataSync Pro is up for renewal on August 1. They've proposed a new pricing structure:\n\n- Current: $24,000/year (5 TB, standard support)\n- Proposed: $28,000/year (10 TB, 24/7 support included)\n\nI've negotiated down from their initial 15% increase to about 8%. Before I sign, I'd like your go-ahead. Ravi from Engineering mentioned the 24/7 support would be valuable given last quarter's weekend outage.\n\nCould you review and let me know by end of day Wednesday?\n\nBest,\nSneha"
+            },
+            {
+                "from": "Ravi (Engineering)",
+                "date": "2026-07-09 14:30",
+                "body": "+1 from engineering. The 24/7 support alone is worth the increase. We lost nearly a full day of engineering time during that March pipeline failure waiting for standard-hours support.\n\nRavi"
+            }
+        ]
+    },
+    {
+        "id": "thread_005",
+        "subject": "Design review meeting — new dashboard UI",
+        "messages": [
+            {
+                "from": "Ankit (Design)",
+                "date": "2026-07-10 10:00",
+                "body": "Hey team,\n\nI've completed the first pass of the new dashboard UI mockups. I'd like to schedule a 45-minute design review with the key stakeholders before we move to development.\n\n**What's ready for review:**\n- New analytics dashboard layout\n- Updated navigation sidebar\n- Dark mode variant\n- Mobile responsive wireframes\n\n**Suggested attendees:**\n- Rahul (Product/Engineering lead)\n- Sneha (PM)\n- Priya (QA)\n- Myself (Design)\n\nCould you let me know your availability for this Thursday or Friday? I've blocked 2–4 PM both days in the design team calendar.\n\nCheers,\nAnkit"
+            },
+            {
+                "from": "Sneha (PM)",
+                "date": "2026-07-10 11:30",
+                "body": "Thursday 2 PM works for me. Looking forward to seeing the mockups!\n\nSneha"
+            }
+        ]
+    }
+]

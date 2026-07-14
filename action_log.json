@@ -1,0 +1,30 @@
+[
+  {
+    "timestamp": "2026-07-13T19:49:08.239643",
+    "action_type": "sent",
+    "thread_subject": "see",
+    "detail": "Kunal Gautam <kunalgautam12674@gmail.com>",
+    "id": "19f5bd8934906234"
+  },
+  {
+    "timestamp": "2026-07-13T19:49:34.084141",
+    "action_type": "booked",
+    "thread_subject": "see",
+    "detail": "Quick meeting",
+    "id": "ol9tk00qml4mhhmeqruiqb294s"
+  },
+  {
+    "timestamp": "2026-07-13T21:48:37.921006",
+    "action_type": "sent",
+    "thread_subject": "Urgent Meeting",
+    "detail": "Kunal Gautam <kunalgautam12674@gmail.com>",
+    "id": "19f5c45fb74e377f"
+  },
+  {
+    "timestamp": "2026-07-13T21:48:58.749709",
+    "action_type": "booked",
+    "thread_subject": "Urgent Meeting",
+    "detail": "Hi Kunal, Could you let me know which of the following times works best for you for a quick meeting?",
+    "id": "bb0gp7n1aauf4idsk61taqom0g"
+  }
+]

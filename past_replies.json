@@ -1,0 +1,17 @@
+[
+    {
+        "subject": "Q3 roadmap priorities",
+        "to": "engineering-team@company.com",
+        "body": "Thanks for pulling this together, folks.\n\nA few thoughts on the Q3 roadmap:\n\n1. The analytics dashboard overhaul should stay top priority — it's our most-requested feature by far.\n2. Let's deprioritise the dark mode refresh. Nice to have, but not this quarter.\n3. I'd like us to carve out 2 weeks for tech debt in August. The team's been flagging it, and I agree.\n\nLet me know if any of this conflicts with what you're hearing from your teams.\n\nBest, Rahul"
+    },
+    {
+        "subject": "Re: User feedback on the new onboarding flow",
+        "to": "design@company.com",
+        "body": "This is really helpful — thanks for running the study.\n\nA couple of quick reactions:\n\n1. The drop-off at step 4 is concerning. Can we A/B test a simplified version that cuts that step down to one screen?\n2. I love the new illustration style — it's a big step up from the current one.\n\nHappy to jump on a call to prioritise these if that helps.\n\nBest, Rahul"
+    },
+    {
+        "subject": "Weekly sync — moving to Tuesdays",
+        "to": "product-team@company.com",
+        "body": "Quick heads-up: I'm moving our weekly sync from Wednesdays to Tuesdays at the same time (11 AM).\n\nWhy the change — a few of you mentioned Wednesday was getting crowded with other meetings, and I agree it makes for a better rhythm.\n\nPlease update your calendars. Let me know if the new slot doesn't work for anyone.\n\nBest, Rahul"
+    }
+]
